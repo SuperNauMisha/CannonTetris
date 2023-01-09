@@ -1,5 +1,7 @@
 import pygame
 import copy
+import sqlite3
+
 
 class Board:
     def __init__(self, width, height):
@@ -9,7 +11,7 @@ class Board:
         # значения по умолчаниюs
         self.left = 100
         self.top = 10
-        self.cell_size = 20
+        self.cell_size = 30
 
     # настройка внешнего вида
     def set_view(self, left, top, cell_size):
@@ -102,12 +104,20 @@ def load_shapes(filename):
             print(level_map)
         return 0
 
+connection = sqlite3.connect("data/Shapes.db")
+cur = connection.cursor()
+paths = []
+for path in cur.execute("""SELECT path FROM Paths""").fetchall():
+    paths.append(path[0])
+print(paths)
+for path in paths:
+    load_shapes(path)
+
 pygame.init()
-pygame.display.set_caption('Жизнь')
+pygame.display.set_caption('Тетрис')
 size = 700, 700
 screen = pygame.display.set_mode(size)
 TIMER = pygame.USEREVENT + 1
-load_shapes("File_Names.txt")
 v = 400
 board = Board(10, 20)
 running = True
