@@ -46,6 +46,7 @@ class Board:
         else:
             return x, y
 
+
     def next_move(self, oldBoard):
         print("TIMER")
         for x in range(0, self.width):
@@ -82,6 +83,8 @@ class Board:
             ans += 1
         return ans
 
+
+
     def render(self, screen):
         for x in range(0, self.width):
             for y in range(0, self.height):
@@ -92,13 +95,19 @@ class Board:
                 else:
                     pygame.draw.rect(screen, pygame.Color('white'), rect, 1)
 
+def load_shapes(filename):
+        filename = "data/" + filename
+        with open(filename, 'r') as mapFile:
+            level_map = [line.strip() for line in mapFile]
+            print(level_map)
+        return 0
 
 pygame.init()
 pygame.display.set_caption('Жизнь')
 size = 700, 700
 screen = pygame.display.set_mode(size)
 TIMER = pygame.USEREVENT + 1
-
+load_shapes("File_Names.txt")
 v = 400
 board = Board(10, 20)
 running = True
