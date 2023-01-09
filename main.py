@@ -5,6 +5,7 @@ import sqlite3
 
 class Board:
     def __init__(self, width, height):
+        self.spawn = 4, 1
         self.width = width
         self.height = height
         self.board = [[0] * width for _ in range(height)]
@@ -24,7 +25,7 @@ class Board:
         self.on_click(cell)
 
     def on_click(self, cell_coords):
-        pass
+        self.generate_figure(shapes[2])
         # if cell_coords:
         #     x, y = cell_coords
         #     if self.board[y][x] == 0:
@@ -53,37 +54,23 @@ class Board:
         print("TIMER")
         for x in range(0, self.width):
             for y in range(0, self.height):
-                if oldBoard[y][x] == 0:
-                    if self.white_neighbours_count(x, y, oldBoard) == 3:
-                        self.board[y][x] = 1
-                if oldBoard[y][x] == 1:
-                    if self.white_neighbours_count(x, y, oldBoard) == 3 or self.white_neighbours_count(x, y, oldBoard) == 2:
-                        self.board[y][x] = 1
-                    else:
-                        self.board[y][x] = 0
+                pass
 
 
-    def white_neighbours_count(self, x, y, allboard):
-        maxy = self.width
-        maxx = self.height
-        ans = 0
-        if allboard[y][x - 1] == 1:
-            ans += 1
-        if allboard[y - 1][x - 1] == 1:
-            ans += 1
-        if allboard[y - 1][x] == 1:
-            ans += 1
-        if allboard[y][(x + 1) % maxx] == 1:
-            ans += 1
-        if allboard[y - 1][(x + 1) % maxx] == 1:
-            ans += 1
-        if allboard[(y + 1) % maxy][(x + 1) % maxx] == 1:
-            ans += 1
-        if allboard[(y + 1) % maxy][x] == 1:
-            ans += 1
-        if allboard[(y + 1) % maxy][x - 1] == 1:
-            ans += 1
-        return ans
+    def generate_figure(self, figure):
+        print(figure)
+        start_x, start_y = self.spawn
+        counterx = 0
+        countery = 0
+        for i in figure:
+            print(i)
+            for j in i:
+                print(2)
+                if j == "#":
+                    self.board[start_y + countery][start_x + counterx] = 2
+                counterx += 1
+            counterx = 0
+            countery += 1
 
 
 
@@ -92,17 +79,17 @@ class Board:
             for y in range(0, self.height):
                 rect = pygame.Rect(self.left + x * self.cell_size, self.top + y * self.cell_size,
                                    self.cell_size, self.cell_size)
-                if self.board[y][x]:
-                    pygame.draw.rect(screen, pygame.Color('white'), rect)
+                if self.board[y][x] == 2:
+                    pygame.draw.rect(screen, pygame.Color('red'), rect)
                 else:
                     pygame.draw.rect(screen, pygame.Color('white'), rect, 1)
 
 def load_shapes(filename):
         filename = "data/" + filename
         with open(filename, 'r') as mapFile:
-            level_map = [line.strip() for line in mapFile]
-            print(level_map)
-        return 0
+            shape = [line.strip() for line in mapFile]
+            print(shape)
+        return shape
 
 connection = sqlite3.connect("data/Shapes.db")
 cur = connection.cursor()
@@ -110,12 +97,13 @@ paths = []
 for path in cur.execute("""SELECT path FROM Paths""").fetchall():
     paths.append(path[0])
 print(paths)
+shapes = []
 for path in paths:
-    load_shapes(path)
+    shapes.append(load_shapes(path))
 
 pygame.init()
 pygame.display.set_caption('Тетрис')
-size = 700, 700
+size = 500, 700
 screen = pygame.display.set_mode(size)
 TIMER = pygame.USEREVENT + 1
 v = 400
