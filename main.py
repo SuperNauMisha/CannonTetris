@@ -47,6 +47,7 @@ class Board:
         else:
             return x, y
 
+
     def red_count(self):
         counter = 0
         for i in self.board:
@@ -112,9 +113,65 @@ class Board:
                         if oldBoard[y][x] == 2:
                             self.board[y][x + dir] = 2
                             self.board[y][x] = 0
-                        elif  oldBoard[y][x] == 3:
+                        elif oldBoard[y][x] == 3:
                             self.board[y][x + dir] = 3
                             self.board[y][x] = 0
+    def rotate_shape(self, dir):
+        oldBoard = copy.deepcopy(board.board)
+        rotBoard = copy.deepcopy(board.board)
+        rotx, roty = -1, -1
+        zerolist = []
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[y][x] == 3:
+                    rotx, roty = x, y
+        if rotx >= 0 and roty >= 0:
+            for y in range(self.height):
+                for x in range(self.width):
+                    if oldBoard[y][x] == 2:
+                        dx = x - rotx
+                        dy = y - roty
+                        print(dir)
+                        if dir == -1:
+                            if abs(dx) > 0 and abs(dy) > 0:
+                                if dx < 0 and dy < 0:
+                                    dy = -dy
+                                elif dx < 0 and dy > 0:
+                                    dx = -dx
+                                elif dx > 0 and dy < 0:
+                                    dx = -dx
+                                elif dx > 0 and dy > 0:
+                                    dy = -dy
+                            else:
+                                if dy == 0 and abs(dx) > 0:
+                                    dy = -dx
+                                    dx = 0
+                                elif dx == 0 and abs(dy) > 0:
+                                    dx = dy
+                                    dy = 0
+                        elif dir == 1:
+                            if abs(dx) > 0 and abs(dy) > 0:
+                                if dx < 0 and dy < 0:
+                                    dx = -dx
+                                elif dx < 0 and dy > 0:
+                                    dy = -dy
+                                elif dx > 0 and dy < 0:
+                                    dy = -dy
+                                elif dx > 0 and dy > 0:
+                                    dx = -dx
+                            else:
+                                if dy == 0:
+                                    dy = dx
+                                    dx = 0
+                                elif dx == 0:
+                                    dx = -dy
+                                    dy = 0
+                        rotBoard[roty + dy][rotx + dx] = 2
+                        rotBoard[y][x] = 0
+        self.board = copy.deepcopy(rotBoard)
+
+
+
 
 
 
@@ -206,8 +263,12 @@ while running:
                     pygame.time.set_timer(TIMER, v)
             if event.key == 97:
                 board.move_shape(-1)
-            elif event.key == 100:
+            if event.key == 100:
                 board.move_shape(1)
+            if event.key == 113:
+                board.rotate_shape(-1)
+            if event.key == 101:
+                board.rotate_shape(1)
 
         if event.type == TIMER:
             oldBoard = copy.deepcopy(board.board)
