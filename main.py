@@ -51,7 +51,7 @@ class Board:
         counter = 0
         for i in self.board:
             for j in i:
-                if j == 2:
+                if j == 2 or j == 3:
                     counter += 1
         return counter
 
@@ -61,7 +61,7 @@ class Board:
         oldBoard = copy.deepcopy(board.board)
         for y in range(self.height - 1, -1, -1):
             for x in range(0, self.width):
-                if oldBoard[y][x] == 2:
+                if oldBoard[y][x] == 2 or oldBoard[y][x] == 3:
                     if y == self.height - 1:
                         green_count += 1
                     elif oldBoard[y + 1][x] == 1:
@@ -69,7 +69,7 @@ class Board:
 
         for y in range(self.height - 1, -1, -1):
             for x in range(0, self.width):
-                if oldBoard[y][x] == 2:
+                if oldBoard[y][x] == 2 or oldBoard[y][x] == 3:
                     if y == self.height - 1:
                         self.board[y][x] = 1
                         green_count += 1
@@ -78,17 +78,20 @@ class Board:
                         green_count += 1
                     if green_count > 0:
                         self.board[y][x] = 1
-                    elif oldBoard[y + 1][x] != 1:
+                    elif oldBoard[y + 1][x] != 1 and oldBoard[y][x] == 2:
                         self.board[y + 1][x] = 2
+                        self.board[y][x] = 0
+                    elif oldBoard[y + 1][x] != 1 and oldBoard[y][x] == 3:
+                        self.board[y + 1][x] = 3
                         self.board[y][x] = 0
 
     def move_shape(self, dir):
         right = False
         left = False
         for y in range(0, self.height):
-            if self.board[y][0] == 2:
+            if self.board[y][0] == 2 or self.board[y][0] == 3:
                 left = True
-            if self.board[y][self.width - 1] == 2:
+            if self.board[y][self.width - 1] == 2 or self.board[y][self.width - 1] == 3:
                 right = True
         oldBoard = copy.deepcopy(board.board)
         for y in range(0, self.height):
@@ -99,12 +102,18 @@ class Board:
                         if oldBoard[y][x] == 2:
                             self.board[y][x + dir] = 2
                             self.board[y][x] = 0
+                        elif  oldBoard[y][x] == 3:
+                            self.board[y][x + dir] = 3
+                            self.board[y][x] = 0
             else:
                 if not right:
                     for x in range(self.width -1, -1, -1):
                         print(x, y)
                         if oldBoard[y][x] == 2:
                             self.board[y][x + dir] = 2
+                            self.board[y][x] = 0
+                        elif  oldBoard[y][x] == 3:
+                            self.board[y][x + dir] = 3
                             self.board[y][x] = 0
 
 
@@ -120,6 +129,9 @@ class Board:
                 if j == "#":
                     self.allcount += 1
                     self.board[start_y + countery][start_x + counterx] = 2
+                elif j == "*":
+                    self.allcount += 1
+                    self.board[start_y + countery][start_x + counterx] = 3
                 counterx += 1
             counterx = 0
             countery += 1
@@ -133,6 +145,8 @@ class Board:
                                    self.cell_size, self.cell_size)
                 if self.board[y][x] == 2:
                     pygame.draw.rect(screen, pygame.Color('red'), rect)
+                elif self.board[y][x] == 3:
+                    pygame.draw.rect(screen, pygame.Color('blue'), rect)
                 elif self.board[y][x] == 1:
                     pygame.draw.rect(screen, pygame.Color('green'), rect)
                 else:
