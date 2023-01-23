@@ -94,6 +94,17 @@ class Board:
                 left = True
             if self.board[y][self.width - 1] == 2 or self.board[y][self.width - 1] == 3:
                 right = True
+
+        for y in range(self.height):
+            for x in range(self.width):
+                if not left:
+                    if (self.board[y][x] == 2 or self.board[y][x] == 3) and self.board[y][x - 1] == 1:
+                        left = True
+                if not right:
+                    if (self.board[y][x] == 2 or self.board[y][x] == 3) and self.board[y][x + 1] == 1:
+                        right = True
+
+
         oldBoard = copy.deepcopy(board.board)
         for y in range(0, self.height):
             if dir == -1:
@@ -118,9 +129,16 @@ class Board:
                             self.board[y][x] = 0
     def rotate_shape(self, dir):
         oldBoard = copy.deepcopy(board.board)
-        rotBoard = copy.deepcopy(board.board)
+        canRot = True
         rotx, roty = -1, -1
-        zerolist = []
+        zerolist = [[0] * self.width for _ in range(self.height)]
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.board[y][x] != 2:
+                    zerolist[y][x] = self.board[y][x]
+                else:
+                    zerolist[y][x] = 0
+
         for y in range(self.height):
             for x in range(self.width):
                 if self.board[y][x] == 3:
@@ -166,15 +184,13 @@ class Board:
                                 elif dx == 0:
                                     dx = -dy
                                     dy = 0
-                        rotBoard[roty + dy][rotx + dx] = 2
-                        rotBoard[y][x] = 0
-        self.board = copy.deepcopy(rotBoard)
-
-
-
-
-
-
+                        if not (roty + dy < 0 or roty + dy >= self.height or rotx + dx < 0 \
+                                or rotx + dx >= self.width or oldBoard[roty + dy][rotx + dx] == 1):
+                            zerolist[roty + dy][rotx + dx] = 2
+                        else:
+                            canRot = False
+            if canRot:
+                self.board = copy.deepcopy(zerolist)
 
     def generate_figure(self, figure):
         start_x, start_y = self.spawn
@@ -193,6 +209,23 @@ class Board:
             counterx = 0
             countery += 1
 
+    def checkRow(self):
+
+        for y in range(0, self.height):
+            dely = y
+            all_ = True
+            for x in range(0, self.width):
+                if self.board[y][x] != 1:
+                    all_ = False
+            if all_:
+                for x in range(0, self.width):
+                    self.board[y][x] = 0
+                for y in range(dely, -1, -1):
+                    for x in range(0, self.width):
+                        if self.board[y][x] == 1:
+                            self.board[y][x] = 0
+                            self.board[y + 1][x] = 1
+
 
 
     def render(self, screen):
@@ -209,11 +242,13 @@ class Board:
                 else:
                     pygame.draw.rect(screen, pygame.Color('white'), rect, 1)
 
+
 def load_shapes(filename):
         filename = "data/" + filename
         with open(filename, 'r') as mapFile:
             shape = [line.strip() for line in mapFile]
         return shape
+
 
 connection = sqlite3.connect("data/Shapes.db")
 cur = connection.cursor()
@@ -229,11 +264,16 @@ pygame.display.set_caption('Тетрис 2.0')
 size = 500, 700
 screen = pygame.display.set_mode(size)
 TIMER = pygame.USEREVENT + 1
+BIGTIMER = pygame.USEREVENT + 2
 v = 400
 board = Board(10, 20)
 oldBoard = copy.deepcopy(board.board)
 running = True
 start = False
+v = 400
+min_speed = 10
+now_speed = v
+pygame.time.set_timer(BIGTIMER, 200)
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -250,10 +290,8 @@ while running:
                     pygame.time.set_timer(TIMER, v)
             elif event.button == 4:
                 v += 50
-                pygame.time.set_timer(TIMER, v)
             elif event.button == 5:
                 v -= 50
-                pygame.time.set_timer(TIMER, v)
         if event.type == pygame.KEYDOWN:
             if event.key == 32:
                 start = not start
@@ -269,13 +307,23 @@ while running:
                 board.rotate_shape(-1)
             if event.key == 101:
                 board.rotate_shape(1)
-
+            if event.key == 115:
+                v = 50
+        if event.type == pygame.KEYUP:
+            if event.key == 115:
+                v = now_speed
         if event.type == TIMER:
+            pygame.time.set_timer(TIMER, v)
             oldBoard = copy.deepcopy(board.board)
             board.next_move()
+        if event.type == BIGTIMER:
+            if now_speed > min_speed:
+                v -= 1
+                now_speed -= 1
+
     if board.red_count() == 0:
         board.start_generation()
-
+    board.checkRow()
     screen.fill((0, 0, 0))
     board.render(screen)
     pygame.display.flip()
