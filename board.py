@@ -1,6 +1,5 @@
 import pygame
 import copy
-import sqlite3
 import random
 
 
@@ -10,14 +9,13 @@ class Board:
         self.width = width
         self.height = height
         self.board = [[0] * width for _ in range(height)]
-        # значения по умолчаниюs
         self.left = 100
         self.top = 10
         self.cell_size = 30
         self.score = 0
         self.game_over = False
 
-    # настройка внешнего вида
+
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
@@ -28,9 +26,10 @@ class Board:
         self.on_click(cell)
 
     def on_click(self, cell_coords):
-        x, y = cell_coords
-        if self.board[y][x] == 1 or self.board[y][x] == 2:
-            self.board[y][x] = 0
+        pass
+        # x, y = cell_coords
+        # if self.board[y][x] == 1 or self.board[y][x] == 2:
+        #     self.board[y][x] = 0
 
     def start_generation(self, shapes):
         self.generate_figure(shapes[random.randint(0, len(shapes) - 1)])
