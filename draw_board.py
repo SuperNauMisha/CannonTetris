@@ -3,7 +3,6 @@ import copy
 import random
 
 
-
 class DrawBoard:
     def __init__(self, x):
         self.width = 3

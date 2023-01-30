@@ -11,6 +11,7 @@ import draw_board
 
 all_sprites = pygame.sprite.Group()
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -27,10 +28,10 @@ def load_image(name, colorkey=None):
 
 
 def load_shapes(filename):
-        filename = "data/" + filename
-        with open(filename, 'r') as mapFile:
-            shape = [line.strip() for line in mapFile]
-        return shape
+    filename = "data/" + filename
+    with open(filename, 'r') as mapFile:
+        shape = [line.strip() for line in mapFile]
+    return shape
 
 
 class GameOver(pygame.sprite.Sprite):
