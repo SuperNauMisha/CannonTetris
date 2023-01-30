@@ -15,6 +15,7 @@ class Board:
         self.score = 0
         self.game_over = False
 
+
     def set_view(self, left, top, cell_size):
         self.left = left
         self.top = top
@@ -49,6 +50,7 @@ class Board:
         else:
             return x, y
 
+
     def red_count(self):
         counter = 0
         for i in self.board:
@@ -59,37 +61,37 @@ class Board:
 
     def next_move(self):
         green_count = 0
-        oldboard = copy.deepcopy(self.board)
+        oldBoard = copy.deepcopy(self.board)
         for y in range(self.height - 1, -1, -1):
             for x in range(0, self.width):
-                if oldboard[y][x] == 2 or oldboard[y][x] == 3:
+                if oldBoard[y][x] == 2 or oldBoard[y][x] == 3:
                     if y == self.height - 1:
                         green_count += 1
-                    elif oldboard[y + 1][x] == 1:
+                    elif oldBoard[y + 1][x] == 1:
                         green_count += 1
 
         for y in range(self.height - 1, -1, -1):
             for x in range(0, self.width):
-                if oldboard[y][x] == 2 or oldboard[y][x] == 3:
+                if oldBoard[y][x] == 2 or oldBoard[y][x] == 3:
                     if y == self.height - 1:
                         self.board[y][x] = 1
                         self.checkGameOver()
                         green_count += 1
-                    elif oldboard[y + 1][x] == 1:
+                    elif oldBoard[y + 1][x] == 1:
                         self.board[y][x] = 1
                         self.checkGameOver()
                         green_count += 1
                     if green_count > 0:
                         self.board[y][x] = 1
                         self.checkGameOver()
-                    elif oldboard[y + 1][x] != 1 and oldboard[y][x] == 2:
+                    elif oldBoard[y + 1][x] != 1 and oldBoard[y][x] == 2:
                         self.board[y + 1][x] = 2
                         self.board[y][x] = 0
-                    elif oldboard[y + 1][x] != 1 and oldboard[y][x] == 3:
+                    elif oldBoard[y + 1][x] != 1 and oldBoard[y][x] == 3:
                         self.board[y + 1][x] = 3
                         self.board[y][x] = 0
 
-    def move_shape(self, direction):
+    def move_shape(self, dir):
         right = False
         left = False
         for y in range(0, self.height):
@@ -107,30 +109,30 @@ class Board:
                     if (self.board[y][x] == 2 or self.board[y][x] == 3) and self.board[y][x + 1] == 1:
                         right = True
 
-        oldboard = copy.deepcopy(self.board)
+
+        oldBoard = copy.deepcopy(self.board)
         for y in range(0, self.height):
             if dir == -1:
                 if not left:
                     for x in range(0, self.width):
-                        if oldboard[y][x] == 2:
-                            self.board[y][x + direction] = 2
+                        if oldBoard[y][x] == 2:
+                            self.board[y][x + dir] = 2
                             self.board[y][x] = 0
-                        elif oldboard[y][x] == 3:
-                            self.board[y][x + direction] = 3
+                        elif  oldBoard[y][x] == 3:
+                            self.board[y][x + dir] = 3
                             self.board[y][x] = 0
             else:
                 if not right:
-                    for x in range(self.width - 1, -1, -1):
-                        if oldboard[y][x] == 2:
-                            self.board[y][x + direction] = 2
+                    for x in range(self.width -1, -1, -1):
+                        if oldBoard[y][x] == 2:
+                            self.board[y][x + dir] = 2
                             self.board[y][x] = 0
-                        elif oldboard[y][x] == 3:
-                            self.board[y][x + direction] = 3
+                        elif oldBoard[y][x] == 3:
+                            self.board[y][x + dir] = 3
                             self.board[y][x] = 0
-
-    def rotate_shape(self, direction):
-        oldboard = copy.deepcopy(self.board)
-        canrot = True
+    def rotate_shape(self, dir):
+        oldBoard = copy.deepcopy(self.board)
+        canRot = True
         rotx, roty = -1, -1
         zerolist = [[0] * self.width for _ in range(self.height)]
         for y in range(self.height):
@@ -147,10 +149,10 @@ class Board:
         if rotx >= 0 and roty >= 0:
             for y in range(self.height):
                 for x in range(self.width):
-                    if oldboard[y][x] == 2:
+                    if oldBoard[y][x] == 2:
                         dx = x - rotx
                         dy = y - roty
-                        if direction == -1:
+                        if dir == -1:
                             if abs(dx) > 0 and abs(dy) > 0:
                                 if dx < 0 and dy < 0:
                                     dy = -dy
@@ -167,7 +169,7 @@ class Board:
                                 elif dx == 0 and abs(dy) > 0:
                                     dx = dy
                                     dy = 0
-                        elif direction == 1:
+                        elif dir == 1:
                             if abs(dx) > 0 and abs(dy) > 0:
                                 if dx < 0 and dy < 0:
                                     dx = -dx
@@ -184,12 +186,12 @@ class Board:
                                 elif dx == 0:
                                     dx = -dy
                                     dy = 0
-                        if not (roty + dy < 0 or roty + dy >= self.height or rotx + dx < 0\
-                                or rotx + dx >= self.width or oldboard[roty + dy][rotx + dx] == 1):
+                        if not (roty + dy < 0 or roty + dy >= self.height or rotx + dx < 0 \
+                                or rotx + dx >= self.width or oldBoard[roty + dy][rotx + dx] == 1):
                             zerolist[roty + dy][rotx + dx] = 2
                         else:
-                            canrot = False
-            if canrot:
+                            canRot = False
+            if canRot:
                 self.board = copy.deepcopy(zerolist)
 
     def generate_figure(self, figure):
@@ -208,6 +210,7 @@ class Board:
                 counterx += 1
             counterx = 0
             countery += 1
+
 
     def checkGameOver(self):
         for y in range(0, self.height):
@@ -232,6 +235,7 @@ class Board:
         pygame.draw.rect(screen, (0, 255, 0), (text_x - 10, text_y - 10,
                                                text_w + 20, text_h + 20), 1)
 
+
     def checkRow(self):
         for y in range(0, self.height):
             dely = y
@@ -248,6 +252,8 @@ class Board:
                         if self.board[y][x] == 1:
                             self.board[y][x] = 0
                             self.board[y + 1][x] = 1
+
+
 
     def render(self, screen):
         for x in range(0, self.width):
