@@ -55,7 +55,6 @@ for path in cur.execute("""SELECT path FROM Paths""").fetchall():
 shapes = []
 for path in paths:
     shapes.append(load_shapes(path))
-print(shapes[0])
 pygame.init()
 pygame.display.set_caption('Тетрис 2.0')
 size = 700, 700
@@ -89,7 +88,6 @@ while running:
                     if draw:
                         draw = False
                         board.generate_figure(drawboard.return_figure())
-                        print(drawboard.return_figure())
                         pygame.time.set_timer(TIMER, v)
                         pygame.time.set_timer(BIGTIMER, 200)
                     else:

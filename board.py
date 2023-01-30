@@ -58,7 +58,6 @@ class Board:
         return counter
 
     def next_move(self):
-        print("TIMER")
         green_count = 0
         oldboard = copy.deepcopy(self.board)
         for y in range(self.height - 1, -1, -1):
@@ -113,7 +112,6 @@ class Board:
             if dir == -1:
                 if not left:
                     for x in range(0, self.width):
-                        print(x, y)
                         if oldboard[y][x] == 2:
                             self.board[y][x + direction] = 2
                             self.board[y][x] = 0
@@ -123,7 +121,6 @@ class Board:
             else:
                 if not right:
                     for x in range(self.width - 1, -1, -1):
-                        print(x, y)
                         if oldboard[y][x] == 2:
                             self.board[y][x + direction] = 2
                             self.board[y][x] = 0
@@ -218,7 +215,6 @@ class Board:
                 if self.board[y][x] == 1:
                     if y < 2:
                         self.game_over = True
-                        print("GAMEOVER")
 
     def restart(self):
         self.board = [[0] * self.width for _ in range(self.height)]
